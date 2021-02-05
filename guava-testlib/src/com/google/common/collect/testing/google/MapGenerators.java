@@ -19,11 +19,8 @@ package com.google.common.collect.testing.google;
 import static com.google.common.collect.testing.Helpers.mapEntry;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
+import com.google.common.base.Function;
+import com.google.common.collect.*;
 import com.google.common.collect.testing.AnEnum;
 import com.google.common.collect.testing.SampleElements;
 import com.google.common.collect.testing.TestEnumMapGenerator;
@@ -33,11 +30,9 @@ import com.google.common.collect.testing.TestStringListGenerator;
 import com.google.common.collect.testing.TestStringMapGenerator;
 import com.google.common.collect.testing.TestUnhashableCollectionGenerator;
 import com.google.common.collect.testing.UnhashableObject;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -47,6 +42,26 @@ import java.util.Map.Entry;
  */
 @GwtCompatible
 public class MapGenerators {
+
+  public static class ImmutableComputingMapGenerator extends TestStringMapGenerator {
+
+    @Override
+    protected Map<String, String> create(Entry<String, String>[] entries) {
+      Map<String, String> given = new HashMap<>();
+      for(Entry<String, String> entry : entries ) {
+        given.put(entry.getKey(),entry.getValue());
+      }
+        Function<String, String> func = new Function<String, String>() {
+          private final Map<String,String> data = given;
+          @Override
+          public @Nullable String apply(@Nullable String input) {
+            return data.get(input);
+          }
+        };
+      return ImmutableComputingMap.create(given.keySet(), func);
+      }
+    }
+
   public static class ImmutableMapGenerator extends TestStringMapGenerator {
     @Override
     protected Map<String, String> create(Entry<String, String>[] entries) {

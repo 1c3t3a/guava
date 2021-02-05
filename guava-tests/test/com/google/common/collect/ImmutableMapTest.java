@@ -38,6 +38,7 @@ import com.google.common.collect.testing.UnhashableObject;
 import com.google.common.collect.testing.features.CollectionFeature;
 import com.google.common.collect.testing.features.CollectionSize;
 import com.google.common.collect.testing.features.MapFeature;
+import com.google.common.collect.testing.google.MapGenerators;
 import com.google.common.collect.testing.google.MapGenerators.ImmutableMapCopyOfEntriesGenerator;
 import com.google.common.collect.testing.google.MapGenerators.ImmutableMapCopyOfEnumMapGenerator;
 import com.google.common.collect.testing.google.MapGenerators.ImmutableMapCopyOfGenerator;
@@ -84,6 +85,13 @@ public class ImmutableMapTest extends TestCase {
     TestSuite suite = new TestSuite();
     suite.addTestSuite(ImmutableMapTest.class);
     suite.addTestSuite(FloodingTest.class);
+
+    suite.addTest(
+            MapTestSuiteBuilder.using(new MapGenerators.ImmutableComputingMapGenerator())
+            .withFeatures(CollectionSize.ANY,
+                    CollectionFeature.ALLOWS_NULL_QUERIES)
+            .named("ImmutableComputingMap")
+            .createTestSuite());
 
     suite.addTest(
         MapTestSuiteBuilder.using(new ImmutableMapGenerator())
